@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject._
 
-import core.actions.{SimpleLoggingAction, MongoDBLogginAction}
+import core.actions.{SimpleLoggingAction, MongoDBLoggingAction}
 import play.api._
 import play.api.mvc._
 
