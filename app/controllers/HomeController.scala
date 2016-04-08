@@ -1,6 +1,8 @@
 package controllers
 
 import javax.inject._
+
+import core.actions.{SimpleLoggingAction, MongoDBLogginAction}
 import play.api._
 import play.api.mvc._
 
@@ -17,7 +19,7 @@ class HomeController @Inject() extends Controller {
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index = Action {
+  def index = SimpleLoggingAction {
     Ok(views.html.index("Your new application is ready."))
   }
 
