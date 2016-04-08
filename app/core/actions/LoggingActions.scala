@@ -15,7 +15,7 @@ object SimpleLoggingAction extends ActionBuilder[Request]{
   }
 }
 
-object MongoDBLogginAction extends ActionBuilder[Request] {
+object MongoDBLoggingAction extends ActionBuilder[Request] {
 
   // TODO: Log all incoming requests to MongoDB
   def invokeBlock[A](req: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
@@ -23,11 +23,11 @@ object MongoDBLogginAction extends ActionBuilder[Request] {
   }
 }
 
+// Optional ActionBuilder to log all incoming requests to PostgreSQL
 object PostgreSQLLoggingAction extends ActionBuilder[Request] {
 
-  // Optional Action to log all incoming requests to PostgreSQL
   def invokeBlock[A](req: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
-    // Code here
+    // Write database driver code for logging
     block(req)
   }
 }
