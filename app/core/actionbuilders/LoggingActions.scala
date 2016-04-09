@@ -1,4 +1,4 @@
-package core.actions
+package core.actionbuilders
 
 import core.models.SimpleLoggingModel
 import org.joda.time.DateTime
