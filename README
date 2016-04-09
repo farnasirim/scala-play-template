@@ -1,49 +1,18 @@
-This is your new Play application
-=================================
+This is a simple play template for building RESTful web services
+ . You can use this template for your projects too
+ . Don't forget to contribute ;)
 
-This file will be packaged with your application when using `activator dist`.
+- Dependency
+ . jBCrypt, is an implementation the OpenBSD Blowfish password hashing algorithm
+ . HashIDs, small Scala library to generate YouTube-like hashes from one or many numbers
 
-There are several demonstration files available in this template.
+- Test
+ . Write test for all your controllers and services, trust me, this is very helpful :)
 
-Controllers
-===========
+- Project
+ . Use JDK 8
+ . Scala version is 2.11.8 (You can change it in build.sbt)
+ . SBT version is 0.13.11 (You can change it build.properties)
 
-- HomeController.scala:
-
-  Shows how to handle simple HTTP requests.
-
-- AsyncController.scala:
-
-  Shows how to do asynchronous programming when handling a request.
-
-- CountController.scala:
-
-  Shows how to inject a component into a controller and use the component when
-  handling requests.
-
-Components
-==========
-
-- Module.scala:
-
-  Shows how to use Guice to bind all the components needed by your application.
-
-- Counter.scala:
-
-  An example of a component that contains state, in this case a simple counter.
-
-- ApplicationTimer.scala:
-
-  An example of a component that starts when the application starts and stops
-  when the application stops.
-
-Filters
-=======
-
-- Filters.scala:
-
-  Creates the list of HTTP filters used by your application.
-
-- ExampleFilter.scala
-
-  A simple filter that adds a header to every response.
+- License
+ . Apache 2 license
