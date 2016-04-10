@@ -1,11 +1,13 @@
 package core.utils
 
-import java.security.SecureRandom
 import javax.inject.{Inject, Singleton}
+import java.security.SecureRandom
+
+import play.api.Configuration
+
+import scala.concurrent.{Future, ExecutionContext}
 
 import org.hashids._
-import play.api.Configuration
-import scala.concurrent.{Future, ExecutionContext}
 
 @Singleton
 class Utils @Inject() (
