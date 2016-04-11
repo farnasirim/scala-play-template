@@ -6,6 +6,11 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.8"
 
+resolvers ++= Seq(
+  "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
+  "dl-john-ky" at "http://dl.john-ky.io/maven/releases"
+)
+
 libraryDependencies ++= Seq(
   jdbc,
   cache,
@@ -17,7 +22,4 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0-RC1" % Test
 )
 
-resolvers ++= Seq(
-  "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
-  "dl-john-ky" at "http://dl.john-ky.io/maven/releases"
-)
+routesGenerator := InjectedRoutesGenerator

@@ -11,10 +11,11 @@ import org.hashids._
 
 @Singleton
 class Utils @Inject() (
-  val config: Configuration) (implicit ec: ExecutionContext) {
+  val configuration: Configuration
+)(implicit exc: ExecutionContext) {
 
   private final val secureRandom = new SecureRandom()
-  private final val hashIds = Hashids.reference(salt = config.getString("hashids.salt").get, minHashLength = 6)
+  private final val hashIds = Hashids.reference(salt = configuration.getString("hashids.salt").get, minHashLength = 6)
 
   def generateActivationCode: Future[Long] = {
     Future {
