@@ -1,6 +1,6 @@
 package core.utils
 
-import javax.inject.{Inject, Singleton}
+import javax.inject._
 import java.security.SecureRandom
 
 import play.api.Configuration
@@ -14,8 +14,8 @@ class Utils @Inject() (
   val configuration: Configuration
 )(implicit exc: ExecutionContext) {
 
-  private final val secureRandom = new SecureRandom()
-  private final val hashIds = Hashids.reference(salt = configuration.getString("hashids.salt").get, minHashLength = 6)
+  private val secureRandom = new SecureRandom()
+  private val hashIds = Hashids.reference(salt = configuration.getString("hashids.salt").get, minHashLength = 6)
 
   def generateActivationCode: Future[Long] = {
     Future {

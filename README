@@ -1,5 +1,6 @@
-This is a simple play template for building RESTful web services
- . You can use this template for your projects too
+This is a simple play template for building RESTful web services to personal use
+ . Using play 2.5.1
+ . You can use this template too, the configurations are straightforward
  . Don't forget to contribute ;)
 
 - Project
@@ -11,9 +12,9 @@ This is a simple play template for building RESTful web services
  . Write test for all your controllers and services, trust me, that is very helpful :)
 
 - Dependencies
- . jBCrypt, is an implementation the OpenBSD Blowfish password hashing algorithm
+ . jBCrypt, is an implementation of OpenBSD Blowfish password hashing algorithm
  . HashIDs, small Scala library to generate YouTube-like hashes from one or many numbers
- . Reactivemongo, Async and Non-blocking scala driver for MongoDB
+ . ReactiveMongo, Async and Non-blocking scala driver for MongoDB
 
 - License
  . Apache 2 license
