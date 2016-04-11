@@ -5,7 +5,7 @@ This is a simple play template for building RESTful web services
 - Project
  . Use JDK 8
  . Scala version is 2.11.8 (You can change it in build.sbt)
- . SBT version is 0.13.11 (You can change it build.properties)
+ . SBT version is 0.13.11 (You can change it in build.properties)
 
 - Test
  . Write test for all your controllers and services, trust me, that is very helpful :)
