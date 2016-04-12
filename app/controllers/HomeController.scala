@@ -23,7 +23,7 @@ class HomeController @Inject() (
   def index = SimpleLoggingAction {
     val json = configuration.getString("home.urls") match {
       case Some(urls) => Json.toJson(
-        JSBaseModel(successful = true, message = None, data = Some( Json.parse(urls)))
+        JSBaseModel(successful = true, message = None, data = Some(Json.parse(urls)))
       )
       case None => Json.toJson(
         JSBaseModel(successful = false, message = Some(Messages("home.urls.not.found")), data = None)
