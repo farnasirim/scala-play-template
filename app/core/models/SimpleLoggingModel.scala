@@ -7,5 +7,5 @@ case class SimpleLoggingModel(
   method: String,
   path: String
 ) {
-  override def toString = s"\nDATE: $dateTime\nMETHOD: $method\nPATH: $path\n"
+  override def toString = s"DATE: $dateTime | METHOD: $method | PATH: $path"
 }

@@ -1,1 +1,3 @@
 home.urls.not.found = Oops, urls not found!
+username.or.password.incorrect = Username or password is incorrect!
+bad.signup.body = Malformed signup body
