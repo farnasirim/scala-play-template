@@ -35,15 +35,58 @@ class LocationController @Inject()(
       val nearbyQueryRequest = request.body.validate[NearbyQuery]
       nearbyQueryRequest.fold(
         errors => {
-          Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
+          Future.successful(BadRequest(Json.toJson(JSBaseModel(
+            successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         query => {
-          locationsCollection.find(
-            Json.obj("location" -> Json.obj("$geoWithin" -> Json.obj("$center" -> Json.toJson(Seq(Json.toJson(Seq(query.lng, query.lat)), Json.toJson(query.radius))))))
-          ).cursor[LocationModel]().collect[Seq](query.count) map {
-            locations => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(locations)))))
+          val futureLocations = locationsCollection.find(
+            Json.obj("location" ->
+              Json.obj("$geoWithin" ->
+                Json.obj("$center" ->
+                  Json.toJson(Seq(Json.toJson(Seq(query.lng, query.lat)), Json.toJson(query.radius))))))
+          ).sort(Json.obj("checkins" -> -1)).cursor[LocationModel]().collect[Seq]()
+          futureLocations.map {
+            locations => locations.filter(_.price < query.price)
+          }.map {
+            locations => locations.filter(_.tags.zip(query.tags).exists {
+              case (locationTag, queryTag) => queryTag == 1 && locationTag >= 0.5
+            })
+          }.map {
+
+            a => val locationListItemstoReturn: Seq[LocationListItem] = a.map {
+              locationModel => {
+                val lngPerson = query.lng
+                val latPerson = query.lat
+                val lngLocation = locationModel.location.coordinates.head
+                val latLocation = locationModel.location.coordinates.tail.head
+
+                LocationListItem(
+                  locationModel._id,
+                  locationModel.title,
+                  locationModel.location,
+                  utils.metersFromLatitudal(lngPerson, latPerson, lngLocation, latLocation),
+                  locationModel.checkins,
+                  locationModel.hasQrCode,
+                  locationModel.price,
+                  locationModel.tags,
+                  locationModel.pictures
+                )
+              }
+            }
+              Ok(Json.toJson(JSBaseModel(successful = true,
+                message = None,
+                data = Some(Json.toJson(MainPageListResponse(locationListItemstoReturn)))))
+              )
           }
         }
       )
   }
 }
+
+/*
+
+              Ok(Json.toJson(JSBaseModel(successful = true,
+                message = None,
+                data = Some(Json.toJson(toReturn))))
+              )
+ */

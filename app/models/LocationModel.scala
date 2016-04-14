@@ -9,13 +9,11 @@ case class LocationModel(
   location: Location,
   title: String,
   price: Double = 0,
+  checkins: Int = 0,
+  votes: Int = 0,
+  hasQrCode: Boolean,
   tags: Seq[Double] = Seq(0,0,0,0,0,0),
-  likes: Int = 0,
-  hasQrCode: Boolean
-)
-
-case class MainPageResponse (
-  locationModels: Seq[LocationModel]
+  pictures: Seq[BSONObjectID]
 )
 
 object LocationModel {
@@ -23,7 +21,3 @@ object LocationModel {
   implicit val locationFormatter = Json.format[LocationModel]
 }
 
-object MainPageResponse {
-  import LocationModel.locationFormatter
-  implicit val mainPageResponseFormatter = Json.format[MainPageResponse]
-}
