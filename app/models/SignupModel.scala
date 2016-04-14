@@ -1,10 +1,13 @@
 package models
 
-/**
-  * Created by alirezapourtaghi on 4/14/16.
-  */
+import play.api.libs.json.Json
+
 case class SignupModel (
-                       username: String,
-                       password: String,
-                       country: String
-                       )
+  username: String,
+  password: String,
+  country: String
+)
+
+object SignupModel {
+  implicit val signupModel = Json.format[SignupModel]
+}
