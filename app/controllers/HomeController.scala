@@ -2,7 +2,6 @@ package controllers
 
 import javax.inject._
 
-
 import play.api._
 import play.api.mvc._
 import play.api.i18n._
@@ -51,14 +50,16 @@ class HomeController @Inject()(
 
       loginRequest.fold(
         errors => {
-          Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("username.or.password.incorrect")), data = None))))
+          Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         loginModel => {
           val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("username" -> loginModel.username, "password" -> loginModel.password)).cursor[UserModel]()
           val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
-          futureUsersList map { users =>
-            // TODO
-            Ok("")
+          futureUsersList map {
+            _.headOption match {
+              case Some(user) => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(user)))))
+              case None => Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("username.or.password.is.incorrect")), data = None)))
+            }
           }
         }
       )
@@ -70,7 +71,7 @@ class HomeController @Inject()(
 
       signupRequest.fold(
         errors => {
-          Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.signup.body")), data = None))))
+          Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         signupModel => {
           val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("username" -> signupModel.username))
@@ -79,12 +80,12 @@ class HomeController @Inject()(
           futureUsersList flatMap {
             _.headOption match {
               case Some(user) =>
-                Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("user.already.exists")), data = None))))
+                Future.successful(Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("user.already.exists")), data = None))))
               case None =>
                 utils.generateActivationCode flatMap { generatedCode =>
-                  usersCollection.insert(new UserModel(generatedCode.toString, signupModel.name, signupModel.lastName,
-                    signupModel.username, signupModel.password, signupModel.country)) map {
-                    _ => Ok("")
+                  val newUser = new UserModel(generatedCode.toString, signupModel.name, signupModel.lastName, signupModel.username, signupModel.password, signupModel.country)
+                  usersCollection.insert(newUser) map {
+                    user => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(newUser)))))
                   }
                 }
             }
