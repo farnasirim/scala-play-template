@@ -5,7 +5,7 @@ import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json._
 
 case class LocationModel(
-  _id: BSONObjectID = BSONObjectID.generate(),
+  _id: BSONObjectID,
   location: Location,
   title: String
 )

@@ -18,6 +18,8 @@ import reactivemongo.play.json._
 import reactivemongo.play.json.collection._
 import core.utils.Utils
 
+import reactivemongo.bson.BSONObjectID
+
 @Singleton
 class LocationController @Inject()(
   configuration: Configuration,
@@ -27,8 +29,14 @@ class LocationController @Inject()(
 )(implicit exec: ExecutionContext) extends Controller with MongoController with ReactiveMongoComponents with I18nSupport {
 
   protected def usersCollection = reactiveMongoApi.db.collection[JSONCollection]("locations")
-//
-//  def nearby  = Action.async(parse.json) {
+
+  def nearby  = Action(parse.json) {
+                                println("out")
+    implicit request => {
+      println("in")
+      println(new LocationModel(BSONObjectID.generate(), new Location(Seq(123.0, 124.0)), "somewhere"))
+      Ok(":D")
+    }
 //    implicit request =>
 //      val nearbyQueryModelRequest =  request.body.validate[NearbyQueryModel]
 //      nearbyQueryModelRequest.fold(
@@ -41,5 +49,5 @@ class LocationController @Inject()(
 //        }
 //      )
 //      ???
-//  }
+  }
 }
