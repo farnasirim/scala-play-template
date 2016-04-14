@@ -2,33 +2,35 @@ package controllers
 
 import javax.inject._
 
-
 import play.api._
 import play.api.mvc._
 import play.api.i18n._
 import play.api.libs.json._
 import play.modules.reactivemongo._
+import play.api.libs.functional.syntax._
 
 import scala.concurrent.{ExecutionContext, Future}
+
 import core.actionbuilders._
 import core.models._
+
 import models.{LoginModel, SignupModel, UserModel}
+
 import reactivemongo.api.Cursor
-import reactivemongo.play.json.collection.JSONCollection
+import reactivemongo.play.json._
+import reactivemongo.play.json.collection._
 
 import core.utils.Utils
 
 @Singleton
-class HomeController @Inject() (
-  configuration: Configuration,
-  utils: Utils,
-  val messagesApi: MessagesApi,
-  val reactiveMongoApi: ReactiveMongoApi
-)(implicit exec: ExecutionContext) extends Controller with MongoController with ReactiveMongoComponents with I18nSupport {
+class HomeController @Inject()(
+                                configuration: Configuration,
+                                utils: Utils,
+                                val messagesApi: MessagesApi,
+                                val reactiveMongoApi: ReactiveMongoApi
+                              )(implicit exec: ExecutionContext) extends Controller with MongoController with ReactiveMongoComponents with I18nSupport {
 
-  def userCollection: Future[JSONCollection] = database map {
-    defaultDb => defaultDb.collection[JSONCollection]("users")
-  }
+  protected def usersCollection = reactiveMongoApi.db.collection[JSONCollection]("users")
 
   def index = SimpleLoggingAction {
     val json = configuration.getString("home.urls") match {
@@ -44,21 +46,20 @@ class HomeController @Inject() (
 
   def login = Action.async(parse.json) {
     implicit request =>
-      val loginResult = request.body.validate[LoginModel]
+      val loginRequest = request.body.validate[LoginModel]
 
-      loginResult.fold(
+      loginRequest.fold(
         errors => {
-          Future.successful(BadRequest(JSBaseModel(successful = false, message = Some(Messages("username.or.password.incorrect")), data = None)))
+          Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         loginModel => {
-          userCollection flatMap {
-            collection =>
-              val cursor: Cursor[UserModel] = collection.find(Json.obj("username" -> loginModel.username, "password" -> loginModel.password))
-                  .cursor[UserModel]()
-              val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
-              futureUsersList map {
-                users => Ok()
-              }
+          val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("username" -> loginModel.username, "password" -> loginModel.password)).cursor[UserModel]()
+          val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
+          futureUsersList map {
+            _.headOption match {
+              case Some(user) => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(user)))))
+              case None => Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("username.or.password.is.incorrect")), data = None)))
+            }
           }
         }
       )
@@ -66,31 +67,28 @@ class HomeController @Inject() (
 
   def signup = Action.async(parse.json) {
     implicit request =>
-      val signupResult = request.body.validate[SignupModel]
-      signupResult.fold(
-        errors =>{
-          Future.successful(BadRequest(JSBaseModel(successful = false, message = Some(Messages("bad.signup.body")), data = None)))
+      val signupRequest = request.body.validate[SignupModel]
+
+      signupRequest.fold(
+        errors => {
+          Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
-        signupModel =>{
-          userCollection flatMap {
-            collection =>
-              val cursor: Cursor[UserModel] = collection.find(Json.obj("username" -> signupModel.username))
-                .cursor[UserModel]()
-              val futureUserList: Future[List[UserModel]]= cursor.collect[List]()
-              futureUserList map {
-                a => a.headOption match{
-                  case Some(user) =>
-                    Future.successful(BadRequest(JSBaseModel(successful = false, message = Some(Messages("user.already.exists")), data = None)))
-                  case None =>
-                    userCollection map {
-                          collection =>
-                            utils.generateActivationCode map {generated =>
-                              collection.insert(new UserModel(generated.toString(), "name", "lastname",
-                                signupModel.username, signupModel.password, signupModel.country ))}
-                    }
-                    Ok()
+        signupModel => {
+          val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("username" -> signupModel.username))
+            .cursor[UserModel]()
+          val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
+          futureUsersList flatMap {
+            _.headOption match {
+              case Some(user) =>
+                Future.successful(Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("user.already.exists")), data = None))))
+              case None =>
+                utils.generateActivationCode flatMap { generatedCode =>
+                  val newUser = new UserModel(generatedCode.toString, signupModel.name, signupModel.lastName, signupModel.username, signupModel.password, signupModel.country)
+                  usersCollection.insert(newUser) map {
+                    user => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(newUser)))))
+                  }
                 }
-              }
+            }
           }
         }
       )
