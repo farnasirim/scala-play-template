@@ -38,7 +38,9 @@ class LocationController @Inject()(
           Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         query => {
-          val cursor: Cursor[LocationModel] = usersCollection.find(Json.obj())
+          val cursor: Cursor[LocationModel] = usersCollection.find(
+            Json.obj("location" -> Json.obj("$geoWithin" -> Json.obj("$center" -> Json.obj((Json.obj(Seq[query.lat, Json.obj(query.lng)] -> query.radius)))))  , ("$limit", 5))
+          )
             .cursor[LocationModel]()
         }
       )
