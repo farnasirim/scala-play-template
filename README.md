@@ -1,16 +1,9 @@
-This is a simple play template for building RESTful web services
- . Using play 2.5.1
- . This template is for personal use
- . You can use this template too, the configurations are straightforward
- . Don't forget to contribute ;)
+# Moodvisor
 
 - Project
  . Make sure you have JDK 8 installed
  . Using scala version 2.11.8 (You can change it in build.sbt)
  . Using sbt version 0.13.11 (You can change it in build.properties)
-
-- Test
- . Write test for all your controllers and services, trust me, that is very helpful :)
 
 - Dependencies
  . ReactiveMongo, Async and Non-blocking scala driver for MongoDB
@@ -19,3 +12,9 @@ This is a simple play template for building RESTful web services
 
 - License
  . Apache 2 license
+
+## Create spatial indices in mongodb:
+```
+db.locations.createIndex({ location: "2dsphere"})
+```
+
