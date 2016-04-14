@@ -8,8 +8,9 @@ case class LocationModel(
   _id: BSONObjectID,
   location: Location,
   title: String,
-  price: Int,
-  tags: Seq[Int],
+  price: Double = 0,
+  tags: Seq[Double] = Seq(0,0,0,0,0,0),
+  likes: Int = 0,
   hasQrCode: Boolean
 )
 

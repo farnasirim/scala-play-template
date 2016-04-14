@@ -28,17 +28,17 @@ class LocationController @Inject()(
   val reactiveMongoApi: ReactiveMongoApi
 )(implicit exec: ExecutionContext) extends Controller with MongoController with ReactiveMongoComponents with I18nSupport {
 
-  protected def usersCollection = reactiveMongoApi.db.collection[JSONCollection]("locations")
+  protected def locationsCollection = reactiveMongoApi.db.collection[JSONCollection]("locations")
 
   def nearby = Action.async(parse.json) {
     implicit request =>
-      val nearbyQueryModelRequest = request.body.validate[NearbyQuery]
-      nearbyQueryModelRequest.fold(
+      val nearbyQueryRequest = request.body.validate[NearbyQuery]
+      nearbyQueryRequest.fold(
         errors => {
           Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         query => {
-          usersCollection.find(
+          locationsCollection.find(
             Json.obj("location" -> Json.obj("$geoWithin" -> Json.obj("$center" -> Json.toJson(Seq(Json.toJson(Seq(query.lng, query.lat)), Json.toJson(query.radius))))))
           ).cursor[LocationModel]().collect[Seq](query.count) map {
             locations => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(locations)))))
