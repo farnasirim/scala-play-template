@@ -7,10 +7,22 @@ import reactivemongo.play.json._
 case class LocationModel(
   _id: BSONObjectID,
   location: Location,
-  title: String
+  title: String,
+  price: Int,
+  tags: Seq[Int],
+  hasQrCode: Boolean
+)
+
+case class MainPageResponse (
+  locationModels: Seq[LocationModel]
 )
 
 object LocationModel {
-  import Location.formatter
-  implicit val formatter = Json.format[LocationModel]
+  import Location.locationFormatter
+  implicit val locationFormatter = Json.format[LocationModel]
+}
+
+object MainPageResponse {
+  import LocationModel.locationFormatter
+  implicit val mainPageResponseFormatter = Json.format[MainPageResponse]
 }

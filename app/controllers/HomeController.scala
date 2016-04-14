@@ -12,7 +12,7 @@ import play.api.libs.functional.syntax._
 import scala.concurrent.{ExecutionContext, Future}
 import core.actionbuilders._
 import core.models._
-import models.{AuthResponseModel, LoginModel, SignupModel, UserModel}
+import models.{AuthResponse, LoginQuery, SignupQuery, UserModel}
 import reactivemongo.api.Cursor
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection._
@@ -42,7 +42,7 @@ class HomeController @Inject()(
 
   def login = Action.async(parse.json) {
     implicit request =>
-      val loginRequest = request.body.validate[LoginModel]
+      val loginRequest = request.body.validate[LoginQuery]
 
       loginRequest.fold(
         errors => {
@@ -55,7 +55,7 @@ class HomeController @Inject()(
             _.headOption match {
               case Some(user) => Ok(Json.toJson(JSBaseModel(successful = true,
                 message = None,
-                data = Some(Json.toJson(AuthResponseModel(user.email, user.token)))))
+                data = Some(Json.toJson(AuthResponse(user.email, user.token)))))
               )
               case None => Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("email.or.password.is.incorrect")), data = None)))
             }
@@ -66,7 +66,7 @@ class HomeController @Inject()(
 
   def signup = Action.async(parse.json) {
     implicit request =>
-      val signupRequest = request.body.validate[SignupModel]
+      val signupRequest = request.body.validate[SignupQuery]
 
       signupRequest.fold(
         errors => {
@@ -87,7 +87,7 @@ class HomeController @Inject()(
                   usersCollection.insert(newUser) map {
                     user => Ok(Json.toJson(JSBaseModel(successful = true,
                       message = None,
-                      data = Some(Json.toJson(AuthResponseModel(newUser.email, newUser.token)))))
+                      data = Some(Json.toJson(AuthResponse(newUser.email, newUser.token)))))
                     )
                   }
                 }

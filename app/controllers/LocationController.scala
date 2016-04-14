@@ -32,14 +32,14 @@ class LocationController @Inject()(
 
   def nearby = Action.async(parse.json) {
     implicit request =>
-      val nearbyQueryModelRequest = request.body.validate[NearbyQueryModel]
+      val nearbyQueryModelRequest = request.body.validate[NearbyQuery]
       nearbyQueryModelRequest.fold(
         errors => {
           Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         query => {
           usersCollection.find(
-            Json.obj("location" -> Json.obj("$geoWithin" -> Json.obj("$center" -> Json.toJson(Seq(Json.toJson(Seq(10.1, 10.1)), Json.toJson(10.1))))))
+            Json.obj("location" -> Json.obj("$geoWithin" -> Json.obj("$center" -> Json.toJson(Seq(Json.toJson(Seq(query.lng, query.lat)), Json.toJson(query.radius))))))
           ).cursor[LocationModel]().collect[Seq](query.count) map {
             locations => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(locations)))))
           }

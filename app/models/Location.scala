@@ -8,5 +8,5 @@ case class Location(
 )
 
 object Location {
-  implicit val formatter = Json.format[Location]
+  implicit val locationFormatter = Json.format[Location]
 }
