@@ -30,20 +30,20 @@ class LocationController @Inject()(
 
   protected def usersCollection = reactiveMongoApi.db.collection[JSONCollection]("locations")
 
-  def nearby  = Action.async(parse.json) {
+  def nearby = Action.async(parse.json) {
     implicit request =>
-      val nearbyQueryModelRequest =  request.body.validate[NearbyQueryModel]
+      val nearbyQueryModelRequest = request.body.validate[NearbyQueryModel]
       nearbyQueryModelRequest.fold(
         errors => {
           Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         query => {
-          val cursor: Cursor[LocationModel] = usersCollection.find(
-            Json.obj("location" -> Json.obj("$geoWithin" -> Json.obj("$center" -> Json.obj((Json.obj(Seq[query.lat, Json.obj(query.lng)] -> query.radius)))))  , ("$limit", 5))
-          )
-            .cursor[LocationModel]()
+          usersCollection.find(
+            Json.obj("location" -> Json.obj("$geoWithin" -> Json.obj("$center" -> Json.toJson(Seq(Json.toJson(Seq(10.1, 10.1)), Json.toJson(10.1))))))
+          ).cursor[LocationModel]().collect[Seq](query.count) map {
+            locations => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(locations)))))
+          }
         }
       )
-      ???
   }
 }
