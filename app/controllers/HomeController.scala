@@ -10,25 +10,21 @@ import play.modules.reactivemongo._
 import play.api.libs.functional.syntax._
 
 import scala.concurrent.{ExecutionContext, Future}
-
 import core.actionbuilders._
 import core.models._
-
-import models.{LoginModel, SignupModel, UserModel}
-
+import models.{AuthResponseModel, LoginModel, SignupModel, UserModel}
 import reactivemongo.api.Cursor
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection._
-
 import core.utils.Utils
 
 @Singleton
 class HomeController @Inject()(
-                                configuration: Configuration,
-                                utils: Utils,
-                                val messagesApi: MessagesApi,
-                                val reactiveMongoApi: ReactiveMongoApi
-                              )(implicit exec: ExecutionContext) extends Controller with MongoController with ReactiveMongoComponents with I18nSupport {
+  configuration: Configuration,
+  utils: Utils,
+  val messagesApi: MessagesApi,
+  val reactiveMongoApi: ReactiveMongoApi
+)(implicit exec: ExecutionContext) extends Controller with MongoController with ReactiveMongoComponents with I18nSupport {
 
   protected def usersCollection = reactiveMongoApi.db.collection[JSONCollection]("users")
 
@@ -57,7 +53,10 @@ class HomeController @Inject()(
           val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
           futureUsersList map {
             _.headOption match {
-              case Some(user) => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(user)))))
+              case Some(user) => Ok(Json.toJson(JSBaseModel(successful = true,
+                message = None,
+                data = Some(Json.toJson(AuthResponseModel(user.userName, user.token)))))
+              )
               case None => Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("username.or.password.is.incorrect")), data = None)))
             }
           }
@@ -83,9 +82,13 @@ class HomeController @Inject()(
                 Future.successful(Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("user.already.exists")), data = None))))
               case None =>
                 utils.generateActivationCode flatMap { generatedCode =>
+                  // TODO: hash password before inserting to db
                   val newUser = new UserModel(generatedCode.toString, signupModel.name, signupModel.lastName, signupModel.username, signupModel.password, signupModel.country)
                   usersCollection.insert(newUser) map {
-                    user => Ok(Json.toJson(JSBaseModel(successful = true, message = None, data = Some(Json.toJson(newUser)))))
+                    user => Ok(Json.toJson(JSBaseModel(successful = true,
+                      message = None,
+                      data = Some(Json.toJson(AuthResponseModel(newUser.userName, newUser.token)))))
+                    )
                   }
                 }
             }
