@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject._
 
+
 import play.api._
 import play.api.mvc._
 import play.api.i18n._
@@ -15,9 +16,12 @@ import models.{LoginModel, SignupModel, UserModel}
 import reactivemongo.api.Cursor
 import reactivemongo.play.json.collection.JSONCollection
 
+import core.utils.Utils
+
 @Singleton
 class HomeController @Inject() (
   configuration: Configuration,
+  utils: Utils,
   val messagesApi: MessagesApi,
   val reactiveMongoApi: ReactiveMongoApi
 )(implicit exec: ExecutionContext) extends Controller with MongoController with ReactiveMongoComponents with I18nSupport {
@@ -67,11 +71,29 @@ class HomeController @Inject() (
         errors =>{
           Future.successful(BadRequest(JSBaseModel(successful = false, message = Some(Messages("bad.signup.body")), data = None)))
         },
-        SignupModel =>{
-          ???
+        signupModel =>{
+          userCollection flatMap {
+            collection =>
+              val cursor: Cursor[UserModel] = collection.find(Json.obj("username" -> signupModel.username))
+                .cursor[UserModel]()
+              val futureUserList: Future[List[UserModel]]= cursor.collect[List]()
+              futureUserList map {
+                a => a.headOption match{
+                  case Some(user) =>
+                    Future.successful(BadRequest(JSBaseModel(successful = false, message = Some(Messages("user.already.exists")), data = None)))
+                  case None =>
+                    userCollection map {
+                          collection =>
+                            utils.generateActivationCode map {generated =>
+                              collection.insert(new UserModel(generated.toString(), "name", "lastname",
+                                signupModel.username, signupModel.password, signupModel.country ))}
+                    }
+                    Ok()
+                }
+              }
+          }
         }
       )
-      ???
   }
 
 }
