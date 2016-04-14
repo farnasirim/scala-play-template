@@ -3,8 +3,8 @@ package models
 import play.api.libs.json.Json
 
 case class NearbyQueryModel(
+  lon: Double,
   lat: Double,
-  lng: Double,
   radius: Double,
   count: Int
 )

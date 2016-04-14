@@ -1,5 +1,5 @@
 home.urls.not.found = Oops, urls not found!
 bad.json.body = Malformed signup body!
 
-username.or.password.is.incorrect = Username or password is incorrect!
-user.already.exists = Username already exists!
+email.or.password.is.incorrect = Email or password is incorrect!
+user.already.exists = User already exists!

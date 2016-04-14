@@ -49,15 +49,15 @@ class HomeController @Inject()(
           Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         loginModel => {
-          val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("username" -> loginModel.username, "password" -> loginModel.password)).cursor[UserModel]()
+          val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("email" -> loginModel.email, "password" -> loginModel.password)).cursor[UserModel]()
           val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
           futureUsersList map {
             _.headOption match {
               case Some(user) => Ok(Json.toJson(JSBaseModel(successful = true,
                 message = None,
-                data = Some(Json.toJson(AuthResponseModel(user.userName, user.token)))))
+                data = Some(Json.toJson(AuthResponseModel(user.email, user.token)))))
               )
-              case None => Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("username.or.password.is.incorrect")), data = None)))
+              case None => Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("email.or.password.is.incorrect")), data = None)))
             }
           }
         }
@@ -73,7 +73,7 @@ class HomeController @Inject()(
           Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         signupModel => {
-          val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("username" -> signupModel.username))
+          val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("email" -> signupModel.email))
             .cursor[UserModel]()
           val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
           futureUsersList flatMap {
@@ -83,11 +83,11 @@ class HomeController @Inject()(
               case None =>
                 utils.generateActivationCode flatMap { generatedCode =>
                   // TODO: hash password before inserting to db
-                  val newUser = new UserModel(generatedCode.toString, signupModel.name, signupModel.lastName, signupModel.username, signupModel.password, signupModel.country)
+                  val newUser = new UserModel(generatedCode.toString, signupModel.name, signupModel.email, signupModel.password, signupModel.country)
                   usersCollection.insert(newUser) map {
                     user => Ok(Json.toJson(JSBaseModel(successful = true,
                       message = None,
-                      data = Some(Json.toJson(AuthResponseModel(newUser.userName, newUser.token)))))
+                      data = Some(Json.toJson(AuthResponseModel(newUser.email, newUser.token)))))
                     )
                   }
                 }

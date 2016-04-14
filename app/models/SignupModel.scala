@@ -4,8 +4,7 @@ import play.api.libs.json.Json
 
 case class SignupModel (
   name: String,
-  lastName: String,
-  username: String,
+  email: String,
   password: String,
   country: String
 )

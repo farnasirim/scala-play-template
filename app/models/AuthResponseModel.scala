@@ -3,8 +3,8 @@ package models
 import play.api.libs.json.Json
 
 case class AuthResponseModel(
-  userName: String,
-  token: String
+  token: String,
+  email: String
 )
 
 object AuthResponseModel {

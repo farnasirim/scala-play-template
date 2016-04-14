@@ -5,8 +5,7 @@ import play.api.libs.json.Json
 case class UserModel(
   token: String,
   name: String,
-  lastName: String,
-  userName: String,
+  email: String,
   password: String,
   country: String
 )
