@@ -83,7 +83,7 @@ class HomeController @Inject()(
               case Some(user) =>
                 Future.successful(Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("user.already.exists")), data = None))))
               case None =>
-                utils.generateActivationCode flatMap { generatedCode =>
+                utils.generateRandomNumber flatMap { generatedCode =>
                   // TODO: hash password before inserting to db
                   val newUser = new UserModel(generatedCode.toString, signupModel.name, signupModel.email, signupModel.password, signupModel.country)
                   usersCollection.insert(newUser) map {

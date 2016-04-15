@@ -17,7 +17,7 @@ class Utils @Inject() (
   private final val secureRandom = new SecureRandom()
   private final val hashIds = Hashids.reference(salt = configuration.getString("hashids.salt").get, minHashLength = 6)
 
-  def generateActivationCode: Future[Long] = {
+  def generateRandomNumber: Future[Long] = {
     Future {
       111111 + secureRandom.nextInt(888888)
     }
