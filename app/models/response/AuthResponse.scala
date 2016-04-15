@@ -1,4 +1,4 @@
-package models
+package models.response
 
 import play.api.libs.json.Json
 
@@ -8,5 +8,5 @@ case class AuthResponse(
 )
 
 object AuthResponse {
-  implicit val authResponseModelFormatter = Json.format[AuthResponse]
+  implicit val authResponseFormatter = Json.format[AuthResponse]
 }

@@ -12,5 +12,5 @@ case class NearbyQuery(
 )
 
 object NearbyQuery {
-  implicit val formatter = Json.format[NearbyQuery]
+  implicit val nearbyQueryFormatter = Json.format[NearbyQuery]
 }

@@ -16,7 +16,7 @@ case class LocationListItem (
   pictures: Seq[BSONObjectID]
 )
 
-object LocationListItem{
+object LocationListItem {
   import Location.locationFormatter
   implicit val locationListItemFormatter = Json.format[LocationListItem]
 }

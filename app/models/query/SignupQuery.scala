@@ -1,4 +1,4 @@
-package models
+package models.query
 
 import play.api.libs.json.Json
 
@@ -10,5 +10,5 @@ case class SignupQuery(
 )
 
 object SignupQuery {
-  implicit val signupModel = Json.format[SignupQuery]
+  implicit val signupQueryFormatter = Json.format[SignupQuery]
 }

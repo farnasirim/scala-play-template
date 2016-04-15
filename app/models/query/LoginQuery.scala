@@ -1,4 +1,4 @@
-package models
+package models.query
 
 import play.api.libs.json.Json
 
@@ -8,5 +8,5 @@ case class LoginQuery(
 )
 
 object LoginQuery {
-  implicit val userFormatter = Json.format[LoginQuery]
+  implicit val loginQueryFormatter = Json.format[LoginQuery]
 }
