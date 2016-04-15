@@ -9,6 +9,26 @@ import play.api.libs.json._
 import play.modules.reactivemongo._
 import play.api.libs.functional.syntax._
 
+import models.query._
+import scala.concurrent.{ExecutionContext, Future}
+import core.actionbuilders._
+import core.models._
+import models.UserModel
+import reactivemongo.api.Cursor
+import reactivemongo.play.json._
+import reactivemongo.play.json.collection._
+import core.utils.Utils
+import models.query.{LoginQuery, SignupQuery}
+import models.response.AuthResponse
+import javax.inject._
+
+import play.api._
+import play.api.mvc._
+import play.api.i18n._
+import play.api.libs.json._
+import play.modules.reactivemongo._
+import play.api.libs.functional.syntax._
+
 import scala.concurrent.{ExecutionContext, Future}
 import core.actionbuilders._
 import core.models._
@@ -63,11 +83,11 @@ class LocationController @Inject()(
                 val latLocation = locationModel.location.coordinates.tail.head
 
                 LocationListItem(
-                  locationModel._id,
+                  locationModel._id.stringify,
                   locationModel.title,
                   locationModel.location,
                   utils.metersFromLatitudal(lngPerson, latPerson, lngLocation, latLocation),
-                  locationModel.checkins,
+                  locationModel.checkins.size,
                   locationModel.hasQrCode,
                   locationModel.price,
                   locationModel.tags,
@@ -85,19 +105,25 @@ class LocationController @Inject()(
       )
   }
 
-  def checkin= Action.async(parse.json) {
-    implicit request =>
-    request.headers.get("token") match{
-      case Some(token) =>{
-        usersCollection.update(
-          {},
-          {}
-        )
-      }
-      case None =>
-        Future.successful(BadRequest(Json.toJson(JSBaseModel(
-          successful = false, message = Some(Messages("invalid.token")), data = None))))
-    }
-    ???
-  }
+//  def checkin= Action.async(parse.json) {
+//    implicit request =>{
+//     val checkinRequest = request.body.validate[CheckinQuery]
+//      checkinRequest.fold(
+//          errors => {
+//            Future.successful(BadRequest(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("bad.json.body")), data = None)))) },
+//        checkinQuery => {
+//          val cursor: Cursor[UserModel] = usersCollection.find(Json.obj("email" -> loginModel.email, "password" -> loginModel.password)).cursor[UserModel]()
+//          val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
+//          request.headers.get("token") match {
+//            case None =>
+//              Future.successful(BadRequest(Json.toJson(JSBaseModel(
+//                successful = false, message = Some(Messages("invalid.token")), data = None))))
+//            case Some(token) => {
+//
+//            }
+//          }
+//        }
+//      )
+//    }
+//  }
 }

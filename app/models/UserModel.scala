@@ -7,7 +7,8 @@ case class UserModel(
   name: String,
   email: String,
   password: String,
-  country: String
+  country: String,
+  visited: Seq[String] = Seq()
 )
 
 object UserModel {
