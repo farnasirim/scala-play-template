@@ -30,6 +30,7 @@ class LocationController @Inject()(
 
   protected def locationsCollection = reactiveMongoApi.db.collection[JSONCollection]("locations")
 
+
   def nearby = Action.async(parse.json) {
     implicit request =>
       val nearbyQueryRequest = request.body.validate[NearbyQuery]
@@ -39,11 +40,12 @@ class LocationController @Inject()(
             successful = false, message = Some(Messages("bad.json.body")), data = None))))
         },
         query => {
+          val earthRadiusInMeters = 6371000.0
           val futureLocations = locationsCollection.find(
             Json.obj("location" ->
               Json.obj("$geoWithin" ->
-                Json.obj("$center" ->
-                  Json.toJson(Seq(Json.toJson(Seq(query.lng, query.lat)), Json.toJson(query.radius))))))
+                Json.obj("$centerSphere" ->
+                  Json.toJson(Seq(Json.toJson(Seq(query.lng, query.lat)), Json.toJson(query.radius/earthRadiusInMeters))))))
           ).sort(Json.obj("checkins" -> -1)).cursor[LocationModel]().collect[Seq]()
           futureLocations.map {
             locations => locations.filter(_.price < query.price)
