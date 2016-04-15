@@ -7,6 +7,12 @@ POST     /signup                        controllers.HomeController.signup
 
 POST     /locations/nearby              controllers.LocationController.nearby
 
+# GET      /location/page               controllers.LocationController.page
+# POST     /location/add                controllers.LocationController.add
+# PUT      /location/checkin            controllers.LocationController.checkin
+# PUT      /location/tags               controllers.LocationController.tags
+# PUT      /location/price              controllers.LocationController.price
+
 POST     /files/upload                  controllers.FileController.upload
 GET      /files/download                controllers.FileController.download
 
