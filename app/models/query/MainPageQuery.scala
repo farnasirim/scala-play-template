@@ -1,5 +1,6 @@
-package models
+package models.query
 
+import models.Location
 import play.api.libs.json.Json
 
 case class MainPageQuery(
@@ -9,5 +10,5 @@ case class MainPageQuery(
 )
 
 object MainPageQuery {
-  implicit val mainPageQueryModelFormatter = Json.format[MainPageQuery]
+  implicit val mainPageQueryFormatter = Json.format[MainPageQuery]
 }

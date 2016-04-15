@@ -11,5 +11,5 @@ case class UserModel(
 )
 
 object UserModel {
-  implicit val userFormatter = Json.format[UserModel]
+  implicit val userModelFormatter = Json.format[UserModel]
 }

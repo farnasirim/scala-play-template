@@ -18,6 +18,5 @@ case class LocationModel(
 
 object LocationModel {
   import Location.locationFormatter
-  implicit val locationFormatter = Json.format[LocationModel]
+  implicit val locationModelFormatter = Json.format[LocationModel]
 }
-

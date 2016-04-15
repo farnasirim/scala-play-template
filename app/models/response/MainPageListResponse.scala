@@ -1,12 +1,11 @@
-package models
+package models.response
 
+import models.LocationListItem
 import play.api.libs.json.Json
 
-import reactivemongo.bson.BSONObjectID
-
-case class MainPageListResponse (
+case class MainPageListResponse(
   mainPageResponses: Seq[LocationListItem]
-                                )
+)
 
 object MainPageListResponse {
     implicit val mainPageListResponseFormatter = Json.format[MainPageListResponse]

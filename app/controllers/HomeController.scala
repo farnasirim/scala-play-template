@@ -12,11 +12,13 @@ import play.api.libs.functional.syntax._
 import scala.concurrent.{ExecutionContext, Future}
 import core.actionbuilders._
 import core.models._
-import models.{AuthResponse, LoginQuery, SignupQuery, UserModel}
+import models.UserModel
 import reactivemongo.api.Cursor
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection._
 import core.utils.Utils
+import models.query.{LoginQuery, SignupQuery}
+import models.response.AuthResponse
 
 @Singleton
 class HomeController @Inject()(
