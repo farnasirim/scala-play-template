@@ -53,8 +53,8 @@ class LocationController @Inject()(
             locations.filter(_.tags.zip(query.tags).exists {
               case (locationTag, queryTag) => queryTag == 1 && locationTag >= 0.5
             })
-          }.map { a =>
-            val locationListItemstoReturn: Seq[LocationListItem] = a.map {
+          }.map { locations =>
+            val locationListItemstoReturn: Seq[LocationListItem] = locations.take(query.count).map {
               locationModel => {
                 val lngPerson = query.lng
                 val latPerson = query.lat
