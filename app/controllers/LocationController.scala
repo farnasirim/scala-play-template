@@ -47,13 +47,12 @@ class LocationController @Inject()(
           ).sort(Json.obj("checkins" -> -1)).cursor[LocationModel]().collect[Seq]()
           futureLocations.map {
             locations => locations.filter(_.price < query.price)
-          }.map {
-            locations => locations.filter(_.tags.zip(query.tags).exists {
+          }.map { locations =>
+            locations.filter(_.tags.zip(query.tags).exists {
               case (locationTag, queryTag) => queryTag == 1 && locationTag >= 0.5
             })
-          }.map {
-
-            a => val locationListItemstoReturn: Seq[LocationListItem] = a.map {
+          }.map { a =>
+            val locationListItemstoReturn: Seq[LocationListItem] = a.map {
               locationModel => {
                 val lngPerson = query.lng
                 val latPerson = query.lat
@@ -73,7 +72,8 @@ class LocationController @Inject()(
                 )
               }
             }
-              Ok(Json.toJson(JSBaseModel(successful = true,
+              Ok(Json.toJson(JSBaseModel(
+                successful = true,
                 message = None,
                 data = Some(Json.toJson(MainPageListResponse(locationListItemstoReturn)))))
               )
@@ -82,11 +82,3 @@ class LocationController @Inject()(
       )
   }
 }
-
-/*
-
-              Ok(Json.toJson(JSBaseModel(successful = true,
-                message = None,
-                data = Some(Json.toJson(toReturn))))
-              )
- */

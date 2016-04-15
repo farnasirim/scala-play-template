@@ -2,6 +2,7 @@ package models
 
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
+import reactivemongo.play.json._
 
 case class LocationListItem (
   id: BSONObjectID,
@@ -16,6 +17,6 @@ case class LocationListItem (
 )
 
 object LocationListItem{
-  implicit val LocationListItemFormatter = Json.format[LocationListItem]
+  import Location.locationFormatter
+  implicit val locationListItemFormatter = Json.format[LocationListItem]
 }
-
