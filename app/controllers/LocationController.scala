@@ -29,6 +29,7 @@ class LocationController @Inject()(
 )(implicit exec: ExecutionContext) extends Controller with MongoController with ReactiveMongoComponents with I18nSupport {
 
   protected def locationsCollection = reactiveMongoApi.db.collection[JSONCollection]("locations")
+  protected def usersCollection = reactiveMongoApi.db.collection[JSONCollection]("users")
 
 
   def nearby = Action.async(parse.json) {
@@ -82,5 +83,21 @@ class LocationController @Inject()(
           }
         }
       )
+  }
+
+  def checkin= Action.async(parse.json) {
+    implicit request =>
+    request.headers.get("token") match{
+      case Some(token) =>{
+        usersCollection.update(
+          {},
+          {}
+        )
+      }
+      case None =>
+        Future.successful(BadRequest(Json.toJson(JSBaseModel(
+          successful = false, message = Some(Messages("invalid.token")), data = None))))
+    }
+    ???
   }
 }

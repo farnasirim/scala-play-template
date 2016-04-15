@@ -5,7 +5,7 @@ import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json._
 
 case class LocationModel(
-  _id: BSONObjectID,
+  _id: String,
   location: Location,
   title: String,
   price: Double = 0,
@@ -13,7 +13,7 @@ case class LocationModel(
   votes: Int = 0,
   hasQrCode: Boolean,
   tags: Seq[Double] = Seq(0,0,0,0,0,0),
-  pictures: Seq[BSONObjectID]
+  pictures: Seq[String]
 )
 
 object LocationModel {

@@ -1,7 +1,9 @@
-home.urls.not.found = Oops, urls not found!
-bad.json.body = Malformed signup body!
-missing.file = Missing file!
-file.does.not.exists = File does not exists!
+home.urls.not.found = Oops, urls not found
+bad.json.body = Malformed signup body
+missing.file = Missing file
+file.does.not.exists = File does not exists
 
-email.or.password.is.incorrect = Email or password is incorrect!
-user.already.exists = User already exists!
+email.or.password.is.incorrect = Email or password is incorrect
+user.already.exists = User already exists
+
+invalid.token = Invalid token in header request
