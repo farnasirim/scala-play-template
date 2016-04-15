@@ -55,7 +55,8 @@ class HomeController @Inject()(
           val futureUsersList: Future[List[UserModel]] = cursor.collect[List]()
           futureUsersList map {
             _.headOption match {
-              case Some(user) => Ok(Json.toJson(JSBaseModel(successful = true,
+              case Some(user) => Ok(Json.toJson(JSBaseModel(
+                successful = true,
                 message = None,
                 data = Some(Json.toJson(AuthResponse(user.email, user.token)))))
               )
@@ -83,11 +84,12 @@ class HomeController @Inject()(
               case Some(user) =>
                 Future.successful(Ok(Json.toJson(JSBaseModel(successful = false, message = Some(Messages("user.already.exists")), data = None))))
               case None =>
-                utils.generateRandomNumber flatMap { generatedCode =>
+                utils.generateRandomNumber flatMap { generatedNumber =>
                   // TODO: hash password before inserting to db
-                  val newUser = new UserModel(generatedCode.toString, signupModel.name, signupModel.email, signupModel.password, signupModel.country)
+                  val newUser = new UserModel(generatedNumber.toString, signupModel.name, signupModel.email, signupModel.password, signupModel.country)
                   usersCollection.insert(newUser) map {
-                    user => Ok(Json.toJson(JSBaseModel(successful = true,
+                    user => Ok(Json.toJson(JSBaseModel(
+                      successful = true,
                       message = None,
                       data = Some(Json.toJson(AuthResponse(newUser.email, newUser.token)))))
                     )
